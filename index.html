@@ -6,8 +6,47 @@
   <meta name="robots" content="noindex">
   <title>Information and AI Settings in Search Engines</title>
 
-  <!-- Neutral landing page for the bare domain. It must not link to either
-       arm's setup page and must not carry an OpenSearch link tag. -->
+  <!--
+    One page serves both arms, because Chrome only adds a site's search
+    engine from a page whose URL has no path (Chromium
+    GenerateKeywordFromNavigationEntry; iOS GenerateKeywordFromNavigationItem).
+    The arm comes from the tag after "#", which is not part of the path:
+      aisearchstudy.org/#web  -> "Google Web"     (S=0, udm=14)
+      aisearchstudy.org/#ai   -> "Google AI Mode" (S=1, udm=50)
+    With no tag (or an unknown one) the page stays neutral: no OpenSearch
+    link and no setup steps. Both arms share every sentence below except
+    the engine name and the two "what you will see" lines in ARMS.
+  -->
+  <script>
+    var ARMS = {
+      "#web": {
+        engine: "Google Web",
+        osdd: "osdd/web.xml",
+        effect: "searches you type into Chrome's address bar will show a plain list of website links, with no AI summary at the top.",
+        check: "You should see a plain list of links. There should be no AI summary at the top of the page."
+      },
+      "#ai": {
+        engine: "Google AI Mode",
+        osdd: "osdd/ai.xml",
+        effect: "searches you type into Chrome's address bar will open in Google's AI Mode, which gives you an AI-written answer with links below it.",
+        check: "You should land on a page that says AI Mode at the top and gives you a written answer, with links below it."
+      }
+    };
+    var ARM = ARMS[location.hash] || null;
+    if (ARM) {
+      // Must be in the document before it finishes loading, so Chrome sees it.
+      var link = document.createElement("link");
+      link.rel = "search";
+      link.type = "application/opensearchdescription+xml";
+      link.title = ARM.engine;
+      link.href = ARM.osdd;
+      document.head.appendChild(link);
+      document.documentElement.setAttribute("data-arm", location.hash.slice(1));
+      document.title = "Information and AI Settings in Search Engines - " + ARM.engine + " setup";
+    }
+    // Changing only the tag doesn't reload the page; reload so Chrome re-reads it.
+    window.addEventListener("hashchange", function () { location.reload(); });
+  </script>
 
   <style>
     :root {
@@ -40,14 +79,18 @@
       padding: .75rem .9rem;
       margin: 1rem 0;
     }
-    .shot {
-      display: block;
-      width: 100%;
-      max-width: 22rem;
-      margin: .5rem 0 1rem;
-      border: 1px solid var(--line);
+    .btn {
+      display: inline-block;
+      margin-top: .4rem;
+      padding: .55rem .9rem;
+      border-radius: 6px;
+      background: var(--accent);
+      color: #fff;
+      text-decoration: none;
+      font-weight: 650;
     }
     a { color: var(--accent); }
+    a.btn { color: #fff; }
     kbd {
       font: inherit;
       padding: 0 .3em;
@@ -55,54 +98,70 @@
       border-radius: 4px;
       background: #fff;
     }
-    .test-only { display: none; background: #fff3cd; border: 1px solid #c9a227; padding: .5rem .75rem; }
-    [data-test] .test-only { display: block; }
-    .btn { display: inline-block; margin-top: .4rem; padding: .55rem .9rem; border-radius: 6px; background: var(--accent); color: #fff; text-decoration: none; font-weight: 650; }
+    #setup { display: none; }
+    [data-arm] #setup { display: block; }
+    [data-arm] #neutral { display: none; }
   </style>
-  <script>
-    // TEST (unlinked, 2026-10-01): Chrome adds a site's search engine only
-    // from a page with no path. aisearchstudy.org/#t-web or /#t-ai adds that
-    // test engine from this root page; without the tag the page stays neutral.
-    (function () {
-      var tests = {
-        "#t-web": ["test/web/opensearch.xml", "Google Web"],
-        "#t-ai": ["test/aimode/opensearch.xml", "Google AI Mode"]
-      };
-      var test = tests[location.hash];
-      if (!test) { return; }
-      var link = document.createElement("link");
-      link.rel = "search";
-      link.type = "application/opensearchdescription+xml";
-      link.title = test[1];
-      link.href = test[0];
-      document.head.appendChild(link);
-      document.documentElement.setAttribute("data-test", test[1]);
-    })();
-  </script>
 </head>
 <body>
 <main>
-  <div class="test-only">
-    <p><b>TEST for the research team: <span id="test-name"></span>.</b> Wait a few seconds, then tap this once:
-      <a class="btn" href="https://google.com/search?q=weather">Search once on Google</a></p>
-    <p>Then open Chrome's Settings, then Search engine, and look under Recently visited.</p>
+  <p class="study">Information and AI Settings in Search Engines &middot; Princeton University</p>
+
+  <div id="neutral">
+    <h1>Information and AI Settings in Search Engines</h1>
+    <p>This site belongs to a research study at Princeton University about how people search for information online.</p>
+    <p>If you are taking part, please use the link in your survey to set up Chrome.</p>
   </div>
-  <script>
-    (function () {
-      var name = document.documentElement.getAttribute("data-test");
-      if (name) { document.getElementById("test-name").textContent = name; }
-    })();
-  </script>
-  <p class="study">Princeton University</p>
-  <h1>Information and AI Settings in Search Engines</h1>
 
-  <p>This site belongs to a research study at Princeton University about how people search for information online.</p>
+  <div id="setup">
+    <h1>Set up "<span class="engine"></span>" on your phone</h1>
 
-  <p>If you are taking part, please use the link in your survey to set up Chrome.</p>
+    <p>Follow the steps for your phone. When you are done, <span id="effect"></span></p>
+
+    <div class="note">
+      This page does not see your searches. It only tells Chrome which web address to use. After these steps, your searches go straight to Google.
+    </div>
+
+    <h2>Android phone or tablet</h2>
+    <ol>
+      <li>You are already on this page in Chrome. Good.</li>
+      <li>Wait a few seconds for this page to finish loading. Then tap this button once, and come back to this page afterwards (don't skip this step): <a class="btn" href="https://google.com/search?q=weather">Search once on Google</a></li>
+      <li>Tap the three dots <kbd>&#8942;</kbd> in the <b>top right</b> corner, then <b>Settings</b>, then <b>Search engine</b>.</li>
+      <li>Under <b>Recently visited</b>, tap <b class="engine"></b>.</li>
+      <li><b class="engine"></b> should now have a filled-in circle next to it. Take a screenshot of this screen.</li>
+    </ol>
+
+    <h2>iPhone or iPad</h2>
+    <ol>
+      <li>You are already on this page in Chrome. Good.</li>
+      <li>Wait a few seconds for this page to finish loading. Then tap this button once, and come back to this page afterwards (don't skip this step): <a class="btn" href="https://google.com/search?q=weather">Search once on Google</a></li>
+      <li>Tap the three dots <kbd>&#8942;</kbd> in the <b>bottom right</b> corner, then <b>Settings</b>, then <b>Search engine</b>.</li>
+      <li>Under <b>Recently visited</b>, tap <b class="engine"></b>.</li>
+      <li><b class="engine"></b> should now have a checkmark next to it. Take a screenshot of this screen.</li>
+    </ol>
+
+    <h2>Check that it worked</h2>
+    <ol>
+      <li>Open a new tab.</li>
+      <li>In the address bar, type <b>how does photosynthesis work</b> and press Go.</li>
+      <li id="check"></li>
+    </ol>
+
+    <h2>Using a computer?</h2>
+    <p>The steps for a computer are different. Please follow the computer instructions in the survey.</p>
+  </div>
 
   <h2>Questions?</h2>
-  <p>Email us at <a href="mailto:aguess@princeton.edu">aguess@princeton.edu</a>.</p>
+  <p>Email us at <a href="mailto:aguess@princeton.edu">aguess@princeton.edu</a>. If you are setting up your phone, tell us what phone you have and which step did not work.</p>
   <p>If you have questions about your rights as a research participant, contact the Princeton Institutional Review Board at <a href="mailto:irb@princeton.edu">irb@princeton.edu</a> (study #20278).</p>
 </main>
+<script>
+  if (ARM) {
+    var names = document.querySelectorAll(".engine");
+    for (var i = 0; i < names.length; i++) { names[i].textContent = ARM.engine; }
+    document.getElementById("effect").textContent = ARM.effect;
+    document.getElementById("check").textContent = ARM.check;
+  }
+</script>
 </body>
 </html>
