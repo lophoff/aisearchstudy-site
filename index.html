@@ -55,10 +55,44 @@
       border-radius: 4px;
       background: #fff;
     }
+    .test-only { display: none; background: #fff3cd; border: 1px solid #c9a227; padding: .5rem .75rem; }
+    [data-test] .test-only { display: block; }
+    .btn { display: inline-block; margin-top: .4rem; padding: .55rem .9rem; border-radius: 6px; background: var(--accent); color: #fff; text-decoration: none; font-weight: 650; }
   </style>
+  <script>
+    // TEST (unlinked, 2026-10-01): Chrome adds a site's search engine only
+    // from a page with no path. aisearchstudy.org/#t-web or /#t-ai adds that
+    // test engine from this root page; without the tag the page stays neutral.
+    (function () {
+      var tests = {
+        "#t-web": ["test/web/opensearch.xml", "Google Web"],
+        "#t-ai": ["test/aimode/opensearch.xml", "Google AI Mode"]
+      };
+      var test = tests[location.hash];
+      if (!test) { return; }
+      var link = document.createElement("link");
+      link.rel = "search";
+      link.type = "application/opensearchdescription+xml";
+      link.title = test[1];
+      link.href = test[0];
+      document.head.appendChild(link);
+      document.documentElement.setAttribute("data-test", test[1]);
+    })();
+  </script>
 </head>
 <body>
 <main>
+  <div class="test-only">
+    <p><b>TEST for the research team: <span id="test-name"></span>.</b> Wait a few seconds, then tap this once:
+      <a class="btn" href="https://google.com/search?q=weather">Search once on Google</a></p>
+    <p>Then open Chrome's Settings, then Search engine, and look under Recently visited.</p>
+  </div>
+  <script>
+    (function () {
+      var name = document.documentElement.getAttribute("data-test");
+      if (name) { document.getElementById("test-name").textContent = name; }
+    })();
+  </script>
   <p class="study">Princeton University</p>
   <h1>Information and AI Settings in Search Engines</h1>
 
