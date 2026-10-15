@@ -17,8 +17,16 @@ CNAME       custom domain for GitHub Pages
 
 Why one root page: Chrome only adds a site's search engine from a page whose
 URL has no path, and the `#` tag is not part of the path. Both search templates
-and the ordinary weather activation link use `www.google.com/search`, matching
+and the weather activation link use `www.google.com/search`, matching
 the actual Google destination instead of relying on a redirect from google.com.
+Both arms use the exact activation URL
+`https://www.google.com/search?q=weather#q=` in a native, user-clicked anchor
+with `target="_blank"` and `rel="noopener"`. Preserve the empty `q=` fragment:
+in instrumented Chrome 155 testing (revision `5e88606f83`), ordinary weather
+navigation matched the built-in Google engine and the study engine but credited
+the built-in engine. The fragment navigation credited the study engine and made
+it visible in Settings. The fragment is only for activation; leave all OpenSearch
+search templates unchanged (Web `udm=14`, AI `udm=50`, no fragment).
 The activation search deliberately has no `udm=50`: Chromium excludes AI Mode
 visits from search-engine visit attribution.
 
@@ -29,9 +37,12 @@ with the corrected templates. Keep stable participant links `/#web` and `/#ai`.
 
 This fixes a known host mismatch, but is not a universal compatibility guarantee.
 Other Google engines share the canonical host; Chromium credits one matching
-engine, and iOS settings require a recent credited visit. Physical iPhone and
-Android acceptance remains required after publication, including checking the
-selected arm and its address-bar results. Do not reset participant codes or
+engine, and iOS settings require a recent credited visit. The exact fragment URL has been confirmed for both arms on physical stock
+iPhone Chrome, including correct address-bar results and persistence after
+closing and reopening. Full public setup-flow acceptance remains required after
+publication, along with Android acceptance. Both arms share the site keyword;
+an already selected study engine can complicate switching-arm tests. This is
+not evidence of durability across all Chrome versions. Do not reset participant codes or
 browser settings as part of deployment.
 
 Regression checks: `python tests/descriptors.py` and `node --test tests/routing.cjs`

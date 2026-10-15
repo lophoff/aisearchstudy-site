@@ -44,11 +44,15 @@ for (const hash of ['#web', '#ai', '', '#unknown']) {
     assert.equal(reloads, 1);
   });
 }
-test('ordinary canonical activation on both phone instructions', () => {
+test('fragment-disambiguated activation preserves native new-tab navigation', () => {
   const links = [...html.matchAll(/<a\b([^>]*href="([^"]+)"[^>]*)>Search once on Google<\/a>/g)];
   assert.equal(links.length, 2);
   links.forEach(link => {
-    assert.equal(link[2], 'https://www.google.com/search?q=weather');
+    assert.equal(link[2], 'https://www.google.com/search?q=weather#q=');
+    const url = new URL(link[2]);
+    assert.equal(url.search, '?q=weather');
+    assert.equal(url.hash, '#q=');
+    assert.ok(!/\bon[a-z]+\s*=/i.test(link[1]), 'activation stays a native user-click link');
     assert.match(link[1], /\btarget="_blank"/);
     assert.match(link[1], /\brel="noopener"/);
   });
