@@ -63,3 +63,7 @@ evidence. Publication continues through the existing GitHub Pages main branch.
 No server code; no participant data passes through this site. Never rename
 an OpenSearch `ShortName` or change the domain after launch: participants
 see both in Chrome's settings.
+
+2026-10-17: consolidated the two identical activation anchors into one shared
+button before the device-specific sections. Both arms retain the exact native
+weather URL, target, rel, descriptors and routing. No participant-state changes.

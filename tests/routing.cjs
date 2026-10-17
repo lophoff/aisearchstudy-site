@@ -46,7 +46,7 @@ for (const hash of ['#web', '#ai', '', '#unknown']) {
 }
 test('fragment-disambiguated activation preserves native new-tab navigation', () => {
   const links = [...html.matchAll(/<a\b([^>]*href="([^"]+)"[^>]*)>Search once on Google<\/a>/g)];
-  assert.equal(links.length, 2);
+  assert.equal(links.length, 1);
   links.forEach(link => {
     assert.equal(link[2], 'https://www.google.com/search?q=weather#q=');
     const url = new URL(link[2]);
@@ -61,7 +61,7 @@ test('fragment-disambiguated activation preserves native new-tab navigation', ()
 test('setup copy preserves instructions and returns participants to their survey', () => {
   assert.ok(!html.includes('This page does not see your searches.'));
   assert.ok(html.includes('Follow the instructions on this setup page for your phone.'));
-  assert.equal((html.match(/switch back to this setup tab and continue below/g) || []).length, 2);
+  assert.equal((html.match(/switch back to this setup tab and continue below/g) || []).length, 1);
   assert.ok(html.includes('return to your survey and follow its instructions to continue.'));
 });
 for (const arm of ['web', 'ai']) {
