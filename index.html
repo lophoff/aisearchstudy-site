@@ -114,26 +114,17 @@
   </div>
 
   <div id="setup">
-    <h1>Set up "<span class="engine"></span>" on your phone</h1>
+    <h1 id="setup-heading">Setting up <span class="engine"></span></h1>
 
     <p>Follow the instructions on this setup page for your phone. Keep this page open until you have finished. When you are done, <span id="effect"></span></p>
 
     <p>Wait a few seconds for this page to finish loading. Then tap this button once (don't skip this step). It opens Google in a new tab. When the results have loaded, switch back to this setup tab and continue below: <a class="btn" href="https://www.google.com/search?q=weather#q=" target="_blank" rel="noopener">Search once on Google</a></p>
 
-    <h2>Android phone or tablet</h2>
     <ol>
       <li>You are already on this page in Chrome. Good.</li>
-      <li>Tap the three dots <kbd>&#8942;</kbd> in the <b>top right</b> corner, then <b>Settings</b>, then <b>Search engine</b>.</li>
-      <li>Under <b>Recently visited</b>, tap <b class="engine"></b>.</li>
-      <li><b class="engine"></b> should now have a filled-in circle next to it. Take a screenshot of this screen.</li>
-    </ol>
-
-    <h2>iPhone or iPad</h2>
-    <ol>
-      <li>You are already on this page in Chrome. Good.</li>
-      <li>Tap the three dots <kbd>&#8942;</kbd> in the <b>bottom right</b> corner, then <b>Settings</b>, then <b>Search engine</b>.</li>
-      <li>Under <b>Recently visited</b>, tap <b class="engine"></b>.</li>
-      <li><b class="engine"></b> should now have a checkmark next to it. Take a screenshot of this screen.</li>
+      <li>Tap Chrome’s three-dot menu (usually at the top right on Android or the bottom right on iPhone; its position may differ on a tablet). Tap <b>Settings</b>, then <b>Search engine</b>.</li>
+      <li>Look for <b class="engine"></b>, scrolling if needed. Some versions put it under <b>Recently visited</b>. Tap it.</li>
+      <li>Make sure <b class="engine"></b> has a filled-in circle or checkmark next to it. If it is already selected, leave it selected. Take a screenshot of this screen.</li>
     </ol>
 
     <h2>Check that it worked</h2>
@@ -156,6 +147,7 @@
   if (ARM) {
     var names = document.querySelectorAll(".engine");
     for (var i = 0; i < names.length; i++) { names[i].textContent = ARM.engine; }
+    if (location.hash === "#ai") document.getElementById("setup-heading").textContent = "Setting up Google AI mode";
     document.getElementById("effect").textContent = ARM.effect;
     document.getElementById("check").textContent = ARM.check;
   }

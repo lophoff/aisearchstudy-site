@@ -67,3 +67,10 @@ see both in Chrome's settings.
 2026-10-17: consolidated the two identical activation anchors into one shared
 button before the device-specific sections. Both arms retain the exact native
 weather URL, target, rel, descriptors and routing. No participant-state changes.
+
+2026-10-19: combined Android and iPhone/iPad setup into one four-step list below
+the existing shared activation button. Menu position and filled-circle/checkmark
+differences remain in the shared prose. AI heading is exactly “Setting up Google AI mode”.
+OpenSearch descriptors, activation URL/attributes, Continue pages and arm routing
+remain unchanged. No screenshots are replaced; Qualtrics content and verifier
+logic are untouched.
